@@ -1,0 +1,89 @@
+{
+  "info": {
+    "_postman_id": "ac44aef9-4fcd-45a3-aaa3-bakong-test-flow",
+    "name": "Bakong QR Transaction",
+    "description": "Test QR generation, webhook, and manual update",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Generate QR (Guest)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_SUPERADMIN_JWT",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 15000,\n  \"orderId\": \"ORDER001\",\n  \"name\": \"Chan Dara\",\n  \"phoneNumber\": \"0888888888\",\n  \"password\": \"guest1234\",\n  \"currentLocation\": \"Phnom Penh\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:4190/api/transactions/generate-qr",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "4190",
+          "path": ["api", "transactions", "generate-qr"]
+        }
+      }
+    },
+    {
+      "name": "Webhook (Simulate Bakong Callback)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"data\": {\n    \"hash\": \"FAKEHASH123456\",\n    \"fromAccountId\": \"85699999999@bakong\",\n    \"toAccountId\": \"85612345678@bakong\",\n    \"currency\": \"KHR\",\n    \"amount\": 15000,\n    \"description\": \"Order ORDER001\",\n    \"createdDateMs\": 1715850000000,\n    \"acknowledgedDateMs\": 1715853600000\n  },\n  \"responseCode\": 0,\n  \"responseMessage\": \"Payment success\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:4190/api/transactions/webhook",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "4190",
+          "path": ["api", "transactions", "webhook"]
+        }
+      }
+    },
+    {
+      "name": "Update Transaction Status (Manual)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer YOUR_SUPERADMIN_JWT",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"paymentStatus\": \"paid\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:4190/api/transactions/update-status/REPLACE_ID",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "4190",
+          "path": ["api", "transactions", "update-status", "REPLACE_ID"]
+        }
+      }
+    }
+  ]
+}

@@ -1,97 +1,13 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Customer OTP Registration</title>
-</head>
-<body>
-  <h2>📱 Register as Customer with OTP</h2>
-
-  <label>Name:</label><br>
-  <input type="text" id="name" placeholder="Full Name"><br><br>
-
-  <label>Phone Number:</label><br>
-  <input type="text" id="phone" placeholder="+855979866163"><br>
-  <div id="recaptcha-container"></div>
-  <button onclick="sendOTP()">Send OTP</button><br><br>
-
-  <label>OTP Code:</label><br>
-  <input type="text" id="otp" placeholder="Enter OTP"><br><br>
-
-  <label>Password:</label><br>
-  <input type="password" id="password" placeholder="Password"><br><br>
-
-  <button onclick="verifyOTP()">Verify & Register</button>
-
-  <!-- Firebase OTP JS -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBQkP_mclJ6KvcaK3k5cuPr_ac49fWyE0E",
-      authDomain: "ecommerceotp-82dba.firebaseapp.com",
-      projectId: "ecommerceotp-82dba",
-      storageBucket: "ecommerceotp-82dba.appspot.com",
-      messagingSenderId: "705100722019",
-      appId: "1:705100722019:web:29da22e5a2305186a2ed56",
-      measurementId: "G-KZEHPBQZPX"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-      size: 'normal',
-      callback: () => console.log('reCAPTCHA solved'),
-      'expired-callback': () => alert('reCAPTCHA expired. Try again')
-    });
-
-    let confirmationResult;
-
-    window.sendOTP = async () => {
-      const phoneNumber = document.getElementById("phone").value;
-
-      try {
-        confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier);
-        alert('✅ OTP sent!');
-      } catch (e) {
-        alert("❌ Send OTP failed: " + e.message);
-      }
-    };
-
-    window.verifyOTP = async () => {
-      const code = document.getElementById("otp").value;
-      const name = document.getElementById("name").value;
-      const password = document.getElementById("password").value;
-
-      try {
-        const result = await confirmationResult.confirm(code);
-        const phoneNumber = result.user.phoneNumber;
-
-        const res = await fetch("http://localhost:4190/api/auth/register-otp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name,
-            phoneNumber,
-            otpCode: "firebase",  // Optional — we trust Firebase now
-            password
-          })
-        });
-
-        const data = await res.json();
-        if (res.ok) {
-          alert("✅ Registered! Redirecting...");
-          window.location.href = "/frontend/customerDashboard.html";
-        } else {
-          alert("❌ Registration failed: " + data.message);
-        }
-
-      } catch (e) {
-        alert("❌ OTP Verification failed: " + e.message);
-      }
-    };
-  </script>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Vuetify 3</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>
