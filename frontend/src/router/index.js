@@ -11,6 +11,8 @@ import Register from '@/pages/Register.vue'
 
 // Superadmin Pages
 import SuperAdminDashBoard from '@/pages/superadmin/SuperAdminDashBoard.vue'
+import SuperAdminManageStaff from '@/pages/superadmin/SuperAdminManageStaff.vue'
+
 
 const routes = [
   {
@@ -30,7 +32,13 @@ const routes = [
         path: 'dashboard', // ✅ This is the fix!
         name: 'SuperAdminDashBoard',
         component: SuperAdminDashBoard
+      },
+      {
+        path: 'manage-staff',
+        name: 'SuperAdminManageStaff',
+        component: SuperAdminManageStaff
       }
+
     ],
     meta: { requiresAuth: true, role: 'superadmin' }
   }

@@ -10,9 +10,9 @@
         title="Dashboard"
       />
       <v-list-item
-        to="/superadmin/users"
+        title="Manage Staff"
         prepend-icon="mdi-account-group"
-        title="Manage Users"
+        to="/superadmin/manage-staff"
       />
       <v-list-item
         to="/superadmin/products"
