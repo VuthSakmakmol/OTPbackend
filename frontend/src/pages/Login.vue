@@ -35,10 +35,11 @@
     </v-card>
   </v-container>
 </template>
+
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
 import { useRouter } from 'vue-router'
+import api from '@/plugins/axios'
 
 const phoneNumber = ref('')
 const password = ref('')
@@ -50,9 +51,9 @@ const handleLogin = async () => {
   errorMessage.value = ''
 
   try {
-    const res = await axios.post('http://localhost:4190/api/auth/login', {
+    const res = await api.post('/auth/login', {
       phoneNumber: phoneNumber.value,
-      password: password.value,
+      password: password.value
     })
 
     const token = res.data.token
@@ -60,20 +61,22 @@ const handleLogin = async () => {
 
     if (!user || !user.role) throw new Error('Invalid response from server')
 
-    // Store token & role
     localStorage.setItem('token', token)
     localStorage.setItem('userRole', user.role)
     localStorage.setItem('userData', JSON.stringify(user))
 
-    // ✅ Redirect by role
-    if (user.role === 'superadmin') {
-      router.push('/superadmin/dashboard')
-    } else if (user.role === 'customer') {
-      router.push('/customer/dashboard')
-    } else if (user.role === 'delivery') {
-      router.push('/delivery/dashboard')
-    } else {
-      router.push('/')
+    switch (user.role) {
+      case 'superadmin':
+        router.push('/superadmin/dashboard')
+        break
+      case 'customer':
+        router.push('/customer/dashboard')
+        break
+      case 'delivery':
+        router.push('/delivery/dashboard')
+        break
+      default:
+        router.push('/')
     }
   } catch (err) {
     errorMessage.value = err.response?.data?.message || 'Login failed'

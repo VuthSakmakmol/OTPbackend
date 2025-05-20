@@ -1,23 +1,23 @@
+// frontend/src/plugins/axios.js
 import axios from 'axios'
 
-const instance = axios.create({
-  baseURL: 'http://localhost:4190/api', // ✅ Base API
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:4190/api',
   headers: {
     'Content-Type': 'application/json'
   }
 })
 
-// ✅ Inject token into every request
-instance.interceptors.request.use(config => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
-})
+// ✅ This is safe — NO recursion
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => Promise.reject(error)
+)
 
-export default {
-  install: (app) => {
-    app.config.globalProperties.$api = instance
-  }
-}
+export default api

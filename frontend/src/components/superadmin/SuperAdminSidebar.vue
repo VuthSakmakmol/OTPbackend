@@ -15,6 +15,11 @@
         to="/superadmin/manage-staff"
       />
       <v-list-item
+        title="Manage Customers"
+        prepend-icon="mdi-account-group"
+        :to="{ name: 'SuperAdminManageCustomer' }"
+      />
+      <v-list-item
         to="/superadmin/products"
         prepend-icon="mdi-package-variant"
         title="Products"

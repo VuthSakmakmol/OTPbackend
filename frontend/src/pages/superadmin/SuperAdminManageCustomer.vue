@@ -1,27 +1,39 @@
 <template>
   <v-container>
     <v-row class="align-center justify-space-between mb-4">
-      <h2 class="text-h5 font-weight-bold">👨‍💼 Manage Staff (Admin & Delivery)</h2>
-      <v-btn color="primary" @click="openDialog()">ADD NEW STAFF</v-btn>
+      <h2 class="text-h5 font-weight-bold">🧑‍💼 Manage Customers</h2>
+      <v-btn color="primary" @click="openDialog()">Add New Customer</v-btn>
     </v-row>
 
     <v-data-table
       :headers="headers"
-      :items="staffList"
+      :items="customerList"
       :search="search"
       class="elevation-1"
     >
       <template #top>
-        <v-text-field v-model="search" label="Search" class="mx-4 mt-2" clearable />
+        <v-text-field
+          v-model="search"
+          label="Search by Name or Phone"
+          prepend-inner-icon="mdi-magnify"
+          clearable
+          class="mx-4 mt-2"
+        />
       </template>
 
       <template #[`item.actions`]="{ item }">
         <v-btn icon @click="openDialog(item)">
-          <v-icon color="blue">mdi-pencil</v-icon>
+          <v-icon color="primary">mdi-pencil</v-icon>
         </v-btn>
-        <v-btn icon @click="deleteStaff(item._id)">
+        <v-btn icon @click="deleteCustomer(item._id)">
           <v-icon color="red">mdi-delete</v-icon>
         </v-btn>
+      </template>
+
+      <template #[`item.isVerified`]="{ item }">
+        <v-chip :color="item.isVerified ? 'green' : 'grey'" dark small>
+          {{ item.isVerified ? 'Yes' : 'No' }}
+        </v-chip>
       </template>
     </v-data-table>
 
@@ -29,11 +41,10 @@
     <v-dialog v-model="dialog" max-width="500px">
       <v-card>
         <v-card-title class="text-h6">
-          {{ editedItem._id ? 'Edit Staff' : 'Add New Staff' }}
+          {{ editedItem._id ? 'Edit Customer' : 'Add New Customer' }}
         </v-card-title>
-
         <v-card-text>
-          <v-form @submit.prevent="saveStaff">
+          <v-form @submit.prevent="saveCustomer">
             <v-text-field v-model="editedItem.name" label="Full Name" required />
             <v-text-field v-model="editedItem.phoneNumber" label="Phone Number" required />
             <v-text-field v-model="editedItem.email" label="Email" type="email" />
@@ -42,12 +53,6 @@
               :items="['male', 'female', 'other']"
               label="Gender"
             />
-            <v-select
-              v-model="editedItem.role"
-              :items="['admin', 'delivery']"
-              label="Role"
-              required
-            />
             <v-text-field
               v-model="editedItem.password"
               label="Password"
@@ -55,17 +60,13 @@
               :rules="[v => !editedItem._id || !!v || 'Password required']"
               :required="!editedItem._id"
             />
-            <v-checkbox
-              v-model="editedItem.isVerified"
-              label="Verified Account"
-            />
+            <v-checkbox v-model="editedItem.isVerified" label="Verified Account" />
           </v-form>
         </v-card-text>
-
         <v-card-actions>
           <v-spacer />
           <v-btn variant="text" @click="closeDialog">Cancel</v-btn>
-          <v-btn color="primary" @click="saveStaff">Save</v-btn>
+          <v-btn color="primary" @click="saveCustomer">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -74,34 +75,34 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import api from '@/plugins/axios' // ✅ Use direct import instead of $api
+import api from '@/plugins/axios' // ✅ Direct axios instance
 
-const staffList = ref([])
+const customerList = ref([])
 const search = ref('')
 const dialog = ref(false)
 const editedItem = ref({})
 
-const createdBy = localStorage.getItem('userRole') || 'superadmin'
-
+// Table headers
 const headers = [
   { title: 'Name', key: 'name' },
   { title: 'Phone Number', key: 'phoneNumber' },
-  { title: 'Role', key: 'role' },
+  { title: 'Email', key: 'email' },
+  { title: 'Gender', key: 'gender' },
   { title: 'Verified', key: 'isVerified' },
   { title: 'Actions', key: 'actions', sortable: false }
 ]
 
-// ✅ Load Staff
-const fetchStaff = async () => {
+// ✅ Load all customers
+const fetchCustomers = async () => {
   try {
     const res = await api.get('/getAllDocs/User')
-    staffList.value = res.data.data.filter(u => ['admin', 'delivery'].includes(u.role))
+    customerList.value = res.data.data.filter(u => u.role === 'customer')
   } catch (err) {
     console.error('Fetch failed:', err)
   }
 }
 
-// ✅ Open dialog for create/edit
+// ✅ Open form
 const openDialog = (item = null) => {
   editedItem.value = item
     ? { ...item }
@@ -110,10 +111,10 @@ const openDialog = (item = null) => {
         phoneNumber: '',
         email: '',
         gender: 'other',
-        role: '',
         password: '',
         isVerified: true,
-        createdBy
+        role: 'customer',
+        createdBy: localStorage.getItem('userRole') || 'superadmin'
       }
   dialog.value = true
 }
@@ -123,10 +124,10 @@ const closeDialog = () => {
   editedItem.value = {}
 }
 
-// ✅ Save (create or update)
-const saveStaff = async () => {
+// ✅ Save new or updated customer
+const saveCustomer = async () => {
   try {
-    const payload = { fields: { ...editedItem.value } }
+    const payload = { fields: { ...editedItem.value, role: 'customer' } }
 
     const url = editedItem.value._id
       ? `/updateDoc/User/${editedItem.value._id}`
@@ -137,22 +138,22 @@ const saveStaff = async () => {
     await api[method](url, payload)
 
     closeDialog()
-    fetchStaff()
+    fetchCustomers()
   } catch (err) {
     alert('Save failed: ' + (err.response?.data?.message || err.message))
   }
 }
 
 // ✅ Delete
-const deleteStaff = async (id) => {
-  if (!confirm('Delete this staff member?')) return
+const deleteCustomer = async (id) => {
+  if (!confirm('Are you sure you want to delete this customer?')) return
   try {
     await api.delete(`/deleteDoc/User/${id}`)
-    fetchStaff()
+    fetchCustomers()
   } catch (err) {
     alert('Delete failed: ' + (err.response?.data?.message || err.message))
   }
 }
 
-onMounted(fetchStaff)
+onMounted(fetchCustomers)
 </script>

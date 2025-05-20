@@ -12,6 +12,7 @@ import Register from '@/pages/Register.vue'
 // Superadmin Pages
 import SuperAdminDashBoard from '@/pages/superadmin/SuperAdminDashBoard.vue'
 import SuperAdminManageStaff from '@/pages/superadmin/SuperAdminManageStaff.vue'
+import SuperAdminManageCustomer from '@/pages/superadmin/SuperAdminManageCustomer.vue'
 
 
 const routes = [
@@ -37,7 +38,12 @@ const routes = [
         path: 'manage-staff',
         name: 'SuperAdminManageStaff',
         component: SuperAdminManageStaff
-      }
+      },
+      {
+        path: 'manage-customer',
+        name: 'SuperAdminManageCustomer',
+        component: SuperAdminManageCustomer
+      },
 
     ],
     meta: { requiresAuth: true, role: 'superadmin' }
