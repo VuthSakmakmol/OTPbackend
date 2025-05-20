@@ -19,6 +19,7 @@ import SuperAdminTrackMap from '@/pages/superadmin/SuperAdminTrackMap.vue'
 
 // Delivery Pages
 import DeliveryDashboard from '@/pages/delivery/DeliveryDashboard.vue'
+import DeliveryTrackMap from '@/pages/delivery/DeliveryTrackMap.vue'
 
 // Customer 
 import CustomerDashboard from '@/pages/customer/CustomerDashboard.vue'
@@ -72,6 +73,11 @@ const routes = [
         path: 'dashboard',
         name: 'DeliveryDashboard',
         component: DeliveryDashboard
+      },
+      {
+        path: '/delivery/track',
+        name: 'DeliveryTrack',
+        component: DeliveryTrackMap
       }
     ]
   },

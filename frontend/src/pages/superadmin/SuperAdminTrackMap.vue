@@ -10,11 +10,11 @@
     >
       <GMapMarker
         v-for="user in users"
-        :key="user._id"
-        v-if="user && isValidLatLng(user.latitude, user.longitude)"
-        :position="{ lat: user.latitude, lng: user.longitude }"
-        :icon="getMarkerIcon(user.role)"
-        :title="user.name"
+        :key="user._id || user.userId?._id || Math.random()"
+        v-if="user && isValidLatLng(getLat(user), getLng(user))"
+        :position="{ lat: getLat(user), lng: getLng(user) }"
+        :icon="getMarkerIcon(getRole(user))"
+        :title="`${getName(user)} (${getRole(user)})`"
       />
     </GMapMap>
   </v-container>
@@ -25,11 +25,26 @@ import { ref, onMounted } from 'vue'
 import { io } from 'socket.io-client'
 import axios from '@/plugins/axios'
 
-// Default center: Phnom Penh
-const center = ref({ lat: 11.556, lng: 104.928 })
+const center = ref({ lat: 11.556, lng: 104.928 }) // Phnom Penh
 const users = ref([])
 
 const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:4190')
+
+// 🔁 Fetch all users initially and every 10s
+const fetchAllLiveUsers = async () => {
+  try {
+    const res = await axios.get('/live-location/all')
+    users.value = res.data || []
+  } catch (err) {
+    console.error('❌ Failed to fetch users:', err)
+  }
+}
+
+// ✅ Helpers to normalize data
+const getLat = (user) => user.latitude || user.userId?.latitude || null
+const getLng = (user) => user.longitude || user.userId?.longitude || null
+const getName = (user) => user.name || user.userId?.name || 'Unknown'
+const getRole = (user) => user.role || user.userId?.role || 'unknown'
 
 const isValidLatLng = (lat, lng) => {
   return typeof lat === 'number' && typeof lng === 'number' && !isNaN(lat) && !isNaN(lng)
@@ -38,29 +53,17 @@ const isValidLatLng = (lat, lng) => {
 const getMarkerIcon = (role) => {
   if (role === 'customer') return 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
   if (role === 'delivery') return 'https://maps.google.com/mapfiles/ms/icons/yellow-dot.png'
-  return 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
+  if (role === 'admin') return 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
+  if (role === 'superadmin') return 'https://maps.google.com/mapfiles/ms/icons/green-dot.png'
+  return 'https://maps.google.com/mapfiles/ms/icons/purple-dot.png'
 }
 
-const fetchDeliveries = async () => {
-  try {
-    const res = await axios.get('/live-location/all')
-    if (Array.isArray(res.data)) {
-      users.value = res.data.filter(
-        u => u && typeof u.latitude === 'number' && typeof u.longitude === 'number'
-      )
-    } else {
-      users.value = []
-    }
-  } catch (err) {
-    console.error('❌ Failed to fetch users:', err)
-  }
-}
-
+// 🚀 Live updates
 onMounted(() => {
-  fetchDeliveries()
+  fetchAllLiveUsers()
 
   socket.on('locationUpdated', (data) => {
-    const index = users.value.findIndex(u => u?.userId?._id === data.userId)
+    const index = users.value.findIndex(u => u.userId?._id === data.userId)
     if (index !== -1) {
       users.value[index] = { ...users.value[index], ...data }
     } else {
@@ -68,6 +71,6 @@ onMounted(() => {
     }
   })
 
-  setInterval(fetchDeliveries, 10000)
+  setInterval(fetchAllLiveUsers, 10000)
 })
 </script>

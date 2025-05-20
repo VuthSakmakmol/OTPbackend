@@ -1,44 +1,15 @@
+<!-- SuperAdminSidebar.vue -->
 <template>
-  <v-navigation-drawer app permanent width="260">
-    <v-list dense>
-      <v-list-item-title class="text-h6 text-center mt-3">SuperAdmin</v-list-item-title>
-      <v-divider class="my-3" />
+  <v-list dense>
+    <v-list-item-title class="text-h6 text-center mt-3">SuperAdmin</v-list-item-title>
+    <v-divider class="my-3" />
 
-      <v-list-item
-        to="/superadmin/dashboard"
-        prepend-icon="mdi-view-dashboard"
-        title="Dashboard"
-      />
-      <v-list-item
-        title="Manage Staff"
-        prepend-icon="mdi-account-group"
-        to="/superadmin/manage-staff"
-      />
-      <v-list-item
-        title="Manage Customers"
-        prepend-icon="mdi-account-group"
-        :to="{ name: 'SuperAdminManageCustomer' }"
-      />
-      <v-list-item
-        prepend-icon="mdi-map-marker"
-        title="Track Deliveries"
-        to="/superadmin/track"
-      />
-      <v-list-item
-        to="/superadmin/products"
-        prepend-icon="mdi-package-variant"
-        title="Products"
-      />
-      <v-list-item
-        to="/superadmin/orders"
-        prepend-icon="mdi-cart"
-        title="Orders"
-      />
-      <v-list-item
-        to="/superadmin/settings"
-        prepend-icon="mdi-cog"
-        title="Settings"
-      />
-    </v-list>
-  </v-navigation-drawer>
+    <v-list-item to="/superadmin/dashboard" prepend-icon="mdi-view-dashboard" title="Dashboard" />
+    <v-list-item to="/superadmin/manage-staff" prepend-icon="mdi-account-group" title="Manage Staff" />
+    <v-list-item :to="{ name: 'SuperAdminManageCustomer' }" prepend-icon="mdi-account-group" title="Manage Customers" />
+    <v-list-item to="/superadmin/track" prepend-icon="mdi-map-marker" title="Track Users" />
+    <v-list-item to="/superadmin/products" prepend-icon="mdi-package-variant" title="Products" />
+    <v-list-item to="/superadmin/orders" prepend-icon="mdi-cart" title="Orders" />
+    <v-list-item to="/superadmin/settings" prepend-icon="mdi-cog" title="Settings" />
+  </v-list>
 </template>

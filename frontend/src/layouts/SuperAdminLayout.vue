@@ -1,21 +1,14 @@
 <template>
   <v-app>
-    <v-layout>
-      <!-- Drawer stays outside of v-main -->
-      <v-navigation-drawer
-        v-model="drawer"
-        app
-        permanent
-      >
-      </v-navigation-drawer>
+    <!-- Keep drawer out of v-main to prevent recursion -->
+    <v-navigation-drawer v-model="drawer" app permanent>
+      <SuperAdminSidebar />
+    </v-navigation-drawer>
 
-      <v-main>
-        <!-- Sidebar content -->
-        <SuperAdminSidebar />
-        <SuperAdminTopbar />
-        <router-view />
-      </v-main>
-    </v-layout>
+    <v-main>
+      <SuperAdminTopbar />
+      <router-view />
+    </v-main>
   </v-app>
 </template>
 
@@ -24,5 +17,5 @@ import { ref } from 'vue'
 import SuperAdminSidebar from '@/components/superadmin/SuperAdminSidebar.vue'
 import SuperAdminTopbar from '@/components/superadmin/SuperAdminTopbar.vue'
 
-const drawer = ref(true) // This controls the sidebar
+const drawer = ref(true) // DO NOT bind this in sidebar again
 </script>
