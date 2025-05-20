@@ -3,6 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 // Layouts
 import PublicLayout from '@/layouts/PublicLayout.vue'
 import SuperAdminLayout from '@/layouts/SuperAdminLayout.vue'
+import DeliveryLayout from '@/layouts/DeliveryLayout.vue'
+import CustomerLayout from '@/layouts/CustomerLayout.vue'
 
 // Public Pages
 import Home from '@/pages/Home.vue'
@@ -13,6 +15,14 @@ import Register from '@/pages/Register.vue'
 import SuperAdminDashBoard from '@/pages/superadmin/SuperAdminDashBoard.vue'
 import SuperAdminManageStaff from '@/pages/superadmin/SuperAdminManageStaff.vue'
 import SuperAdminManageCustomer from '@/pages/superadmin/SuperAdminManageCustomer.vue'
+import SuperAdminTrackMap from '@/pages/superadmin/SuperAdminTrackMap.vue'
+
+// Delivery Pages
+import DeliveryDashboard from '@/pages/delivery/DeliveryDashboard.vue'
+
+// Customer 
+import CustomerDashboard from '@/pages/customer/CustomerDashboard.vue'
+import CustomerTrackMap from '@/pages/customer/CustomerTrackMap.vue'
 
 
 const routes = [
@@ -44,10 +54,45 @@ const routes = [
         name: 'SuperAdminManageCustomer',
         component: SuperAdminManageCustomer
       },
+      {
+        path: '/superadmin/track',
+        name: 'SuperAdminTrackMap',
+        component: SuperAdminTrackMap
+      }
+
 
     ],
     meta: { requiresAuth: true, role: 'superadmin' }
-  }
+  },
+  {
+    path: '/delivery',
+    component: DeliveryLayout,
+    children: [
+      {
+        path: 'dashboard',
+        name: 'DeliveryDashboard',
+        component: DeliveryDashboard
+      }
+    ]
+  },
+  {
+  path: '/customer',
+  component: CustomerLayout,
+  children: [
+    {
+      path: 'dashboard',
+      name: 'CustomerDashboard',
+      component: CustomerDashboard
+    },
+    {
+      path: 'track',
+      name: 'CustomerTrackMap',
+      component: CustomerTrackMap
+    }
+  ]
+  },
+
+
 ]
 
 const router = createRouter({

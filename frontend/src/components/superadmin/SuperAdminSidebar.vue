@@ -20,6 +20,11 @@
         :to="{ name: 'SuperAdminManageCustomer' }"
       />
       <v-list-item
+        prepend-icon="mdi-map-marker"
+        title="Track Deliveries"
+        to="/superadmin/track"
+      />
+      <v-list-item
         to="/superadmin/products"
         prepend-icon="mdi-package-variant"
         title="Products"
